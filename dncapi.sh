@@ -6,14 +6,12 @@ ncid=yourID
 apikey=yourapikey
 apipw=yourapipw
 
+# --> get ipv4/6
+aip4=$(curl -s 'https://ip4.irgendwas.ti')
+aip6=$(curl -s 'https://ip6.irgendwas.ti')
+
 api="https://ccp.netcup.net/run/webservice/servers/endpoint.php?JSON"
 client=""
-
-# --> get ipv4
-aip4=$(curl -s 'https://ip4.irgendwas.ti')
-
-# --> get ipv6
-aip6=$(curl -s 'https://ip6.irgendwas.ti')
 
 dir=$(dirname $0)
 
@@ -113,7 +111,7 @@ type=$2
          debug "Your choice: IPv6 --> $type"
          ip6changed
       else
-         echo "Use A for IPv4 OR  AAAA for IPv6 --> exit"
+         echo "Use A for IPv4 OR AAAA for IPv6 --> exit"
          return 1
       fi
       login
@@ -166,13 +164,12 @@ udr1="\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \
       logout
 }
 
-
 help() {
         echo "use Argument like -U or -dfU"
         echo ""
         echo "-d   Debug Mode   dncapi.sh -d... --> some informations"
         echo "-f   Force Mode   dncapi.sh -f... --> ignores ip-check"
-        echo "-U   CheckUpdate  dncapi.sh -P DOMAIN RECORDTYPE --> A or AAAA "
+        echo "-U   CheckUpdate  dncapi.sh -P DOMAIN RECORDTYPE --> A OR AAAA "
         echo "-h   help"
         echo ""
         echo "Examples:"
