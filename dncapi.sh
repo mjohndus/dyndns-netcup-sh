@@ -2,9 +2,9 @@
 
 # --> some declarations
 #Your Credits
-ncid=yourID
-apikey=yourapikey
-apipw=yourapipw
+ncid=your-ncid
+apikey=your-apikey
+apipw=your-apipw
 
 # --> get ipv4/6
 aip4=$(curl -s 'https://ip4.irgendwas.ti')
@@ -28,12 +28,12 @@ debug() {
 }
 
 ip4changed() {
-      if [ ! -f $dir/ip4 ];then
-          echo "" > $dir/ip4
-          /bin/chmod 600 $dir/ip4
-          bip4=$(cat $dir/ip4)
+      if [ ! -f $dir/cip4.log ];then
+          echo "" > $dir/cip4
+          /bin/chmod 600 $dir/cip4.log
+          bip4=$(cat $dir/cip4.log)
       else
-          bip4=$(cat $dir/ip4)
+          bip4=$(cat $dir/cip4.log)
       fi
 
       if [ $force = false -a  "$aip4" == "$bip4" -o "$aip4" == "" ];then
@@ -42,18 +42,18 @@ ip4changed() {
       else
           debug "Your public IPv4: $aip4"
           echo -e "Your IPv4 for $domain has changed or -f --> force is enabled\n"
-          echo $aip4 > $dir/ip4
+          echo $aip4 > $dir/cip4.log
           aip=$aip4
       fi
 }
 
 ip6changed() {
-      if [ ! -f $dir/ip6 ];then
-          echo "" > $dir/ip6
-          /bin/chmod 600 $dir/ip6
-          bip6=$(cat $dir/ip6)
+      if [ ! -f $dir/cip6.log ];then
+          echo "" > $dir/cip6.log
+          /bin/chmod 600 $dir/cip6.log
+          bip6=$(cat $dir/cip6.log)
       else
-          bip6=$(cat $dir/ip6)
+          bip6=$(cat $dir/cip6.log)
       fi
 
       if [ $force = false -a  "$aip6" == "$bip6" -o "$aip6" == "" ];then
@@ -62,7 +62,7 @@ ip6changed() {
       else
           debug "Your public IPv6: $aip6"
           echo -e "Your IPv6 for $domain has changed or -f --> force is enabled\n"
-          echo $aip6 > $dir/ip6
+          echo $aip6 > $dir/cip6.log
           aip=$aip6
       fi
 }
