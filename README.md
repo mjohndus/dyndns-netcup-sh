@@ -1,8 +1,10 @@
 # dyndns for netcup
-
-### Installation
+**simple script to update all IPv4 OR IPv6 for one DOMAIN hosted by netcup**  
+ONLY UPDATING. No adding, deleting, creating, changing names, ...  
+Using: [Netcup-DNS_API](https://www.netcup-wiki.de/wiki/DNS_API).  
+## Installation
 **Copy the file to your preferred folder.**  
-### Confuguration
+## Confuguration
 **Fill out your data:**  
 - ncid=yourID  
 - apikey=yourapikey  
@@ -12,23 +14,33 @@
 - aip4=$(curl -s 'https://ip4.irgendwas.ti')  
 - aip6=$(curl -s 'https://ip6.irgendwas.ti')  
 
-### HowTo
+## HowTo
+**At first start:**  
+cip4.log (and/or) cip6.log files for saving current addresses are created in the same folder.  
 
-**use Argument like -U or -dfU**  
+**At start-up before login:**  
+an ip check compares the current and the stored ip.  
+If nothing has changed, the script is terminated.  
+The script starts if ip changed or option -f is set.  
 
-- -d   Debug Mode   dncapi.sh -d... --> some informations  
-- -f   Force Mode   dncapi.sh -f... --> ignores ip-check  
-- -U   CheckUpdate  dncapi.sh -P DOMAIN RECORDTYPE --> A OR AAAA  
-- -h   help  
+**Use Argument -U as single or like -dU, -dfU:**  
 
-**Examples:**
-- CheckUpdate-IP:  dncapi.sh -U example.com A  
-- CheckUpdate-IP:  dncapi.sh -U example.com AAAA  
-- CheckUpdate-IP:  dncapi.sh -dfU example.com A  
+| Option | Mode | description |
+|:--------------:|--------------:|--------------:|
+| -d | Debug Mode | shows some Informations |
+| -f | Force Mode | ignores ip check |
+| -U | Main function | checks and updates if ip's different |
+| -h | Help Mode | shows Options and Examples |
 
-### Output
-
-**Example for IPv4:** 
+**Examples:**  
+```
+./dncapi.sh -U example.com A  
+./dncapi.sh -dU example.com AAAA  
+./dncapi.sh -dfU example.com A  
+```
+## Output
+**Example output for IPv4:**  
+```
 user@xxxx:~# ./dncapi.sh -dfU example.de A  
 Your choice: IPv4 --> A  
 Your public IPv4: 177.198.122.123  
@@ -43,4 +55,5 @@ ID: 44433344 with Hostname: * and IP: 177.198.122.123 is equal with Public IP: 1
 ID: 44433355 with Hostname: @ and IP: 177.198.122.123 is equal with Public IP: 177.198.122.123  
 Update ID: 44433366 with Hostname: xxxx and IP befor: 199.198.199.123  after: 177.198.122.123  
 ID: 43355566 with Hostname: yyyy and IP: 177.198.122.123 is equal with Public IP: 177.198.122.123  
-Logout successful
+Logout successful  
+```
