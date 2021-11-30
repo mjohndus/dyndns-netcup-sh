@@ -1,7 +1,8 @@
 # dyndns for netcup
-**simple script to update all IPv4 OR IPv6 for one DOMAIN hosted by netcup**  
+**simple script to update all IPv4 or IPv6 for one domain hosted by netcup**  
 ONLY UPDATING. No adding, deleting, creating, changing names, ...  
-Using: [Netcup-DNS_API](https://www.netcup-wiki.de/wiki/DNS_API).  
+
+Using the [Netcup-DNS_API](https://www.netcup-wiki.de/wiki/DNS_API).  
 ## Installation
 **Copy the file to your preferred folder.**  
 ## Confuguration
@@ -16,7 +17,7 @@ Using: [Netcup-DNS_API](https://www.netcup-wiki.de/wiki/DNS_API).
 
 ## HowTo
 **At first start:**  
-cip4.log (and/or) cip6.log files for saving current addresses are created in the same folder.  
+cip4.log or cip6.log files for saving current addresses are created in the same folder.  
 
 **At start-up before login:**  
 an ip check compares the current and the stored ip.  
@@ -26,10 +27,10 @@ The script starts if ip changed or option -f is set.
 **Use Argument -U as single or like -dU, -dfU:**  
 
 | Option | Mode | description |
-|:--------------:|--------------:|--------------:|
+|:------:|-----:|------------:|
 | -d | Debug Mode | shows some Informations |
 | -f | Force Mode | ignores ip check |
-| -U | Main function | checks and updates if ip's different |
+| -U | Main function | checks and updates if ip's are different |
 | -h | Help Mode | shows Options and Examples |
 
 **Examples:**  
