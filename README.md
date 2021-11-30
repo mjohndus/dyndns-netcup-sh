@@ -46,7 +46,7 @@ The script starts if ip changed or option -f is set.
 user@xxxx:~# ./dncapi.sh -dfU example.de A  
 Your choice: IPv4 --> A  
 Your public IPv4: 177.198.122.123  
-Your IPv4 for example.de has changed or -force is enabled  
+Your IPv4 for example.de has changed or -f --> force is enabled  
 Login successful  
 Session ID: NTE5NG5VSzM3ODYyMXZBbW9IY123456789123452eFo5Nz  
 Stored IP's: 177.198.122.123 177.198.122.123 199.198.199.123 177.198.122.123  
