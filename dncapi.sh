@@ -7,7 +7,8 @@ apikey=your-apikey
 apipw=your-apipw
 
 # --> get ipv4/6
-aip4=$(curl -s 'https://ip4.irgendwas.ti')
+aip4a=$(curl -s 'https://ip4.irgendwas.ti')
+aip4b=$(curl -s 'https://ip4.irgendwas.ti')
 aip6=$(curl -s 'https://ip6.irgendwas.ti')
 
 api="https://ccp.netcup.net/run/webservice/servers/endpoint.php?JSON"
@@ -27,17 +28,30 @@ debug() {
       fi
 }
 
+checkipv4() {
+      if [[ "$aip4a" =~ ^(([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))\.){3}([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))$ ]]; then
+             aip4=$aip4a
+#             echo "Server-1 IP: $aip4"
+    elif [[ "$aip4b" =~ ^(([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))\.){3}([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))$ ]]; then
+             aip4=$aip4b
+#             echo "Server-2 IP: $aip4"
+    else
+             echo "Invalid IP: $aip4a $aip4b"
+             exit 1
+      fi
+}
+
 ip4changed() {
       if [ ! -f $dir/cip4.log ];then
-          echo "" > $dir/cip4
+          echo "" > $dir/cip4.log
           /bin/chmod 600 $dir/cip4.log
           bip4=$(cat $dir/cip4.log)
       else
           bip4=$(cat $dir/cip4.log)
       fi
 
-      if [ $force = false -a  "$aip4" == "$bip4" -o "$aip4" == "" ];then
-          debug "Your IPv4 is same or empty so nothing to do --> exit"
+      if [ $force = false -a  "$aip4" == "$bip4" ];then
+          debug "Your IPv4 is same so nothing to do --> exit"
           exit 0
       else
           debug "Your public IPv4: $aip4"
@@ -169,7 +183,7 @@ help() {
         echo ""
         echo "-d   Debug Mode   dncapi.sh -d... --> some informations"
         echo "-f   Force Mode   dncapi.sh -f... --> ignores ip-check"
-        echo "-U   CheckUpdate  dncapi.sh -P DOMAIN RECORDTYPE --> A OR AAAA "
+        echo "-U   CheckUpdate  dncapi.sh -U DOMAIN RECORDTYPE --> A OR AAAA "
         echo "-h   help"
         echo ""
         echo "Examples:"
