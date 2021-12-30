@@ -9,12 +9,16 @@ apipw=your-apipw
 # --> get ipv4/6
 aip4a=$(curl -s 'https://ip4.irgendwas.ti')
 aip4b=$(curl -s 'https://ip4.irgendwas.ti')
-aip6=$(curl -s 'https://ip6.irgendwas.ti')
+aip6a=$(curl -s 'https://ip6.irgendwas.ti')
+aip6b=$(curl -s 'https://ip6.irgendwas.ti')
 
 api="https://ccp.netcup.net/run/webservice/servers/endpoint.php?JSON"
 client=""
 
 dir=$(dirname $0)
+
+regip4='^(([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))\.){3}([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))$'
+regip6='^(([0-9a-fA-F]{0,4}:){1,7}([0-9a-fA-F]{0,4}))$'
 
 debug=false
 force=false
@@ -23,58 +27,75 @@ force=false
 debug() {
       if [ $debug = true ]; then
          for i in "$@"; do
-         echo -e $i"\n"
+         echo -e "$i\n"
          done
       fi
 }
 
 checkipv4() {
-      if [[ "$aip4a" =~ ^(([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))\.){3}([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))$ ]]; then
+
+      if [[ "$aip4a" =~ $regip4 ]]; then
              aip4=$aip4a
-#             echo "Server-1 IP: $aip4"
-    elif [[ "$aip4b" =~ ^(([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))\.){3}([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))$ ]]; then
+             debug "Server-1 IP: $aip4"
+    elif [[ "$aip4b" =~ $regip4 ]]; then
              aip4=$aip4b
-#             echo "Server-2 IP: $aip4"
+             debug "Server-2 IP: $aip4"
     else
              echo "Invalid IP: $aip4a $aip4b"
              exit 1
       fi
 }
 
-ip4changed() {
+checkipv6() {
+
+      if [[ "$aip6a" =~ $regip6 ]]; then
+             aip6=$aip6a
+             debug "Server-1 IP: $aip6"
+    elif [[ "$aip6b" =~ $regip6 ]]; then
+             aip6=$aip6b
+             debug "Server-2 IP: $aip6"
+    else
+             echo "Invalid IP: $aip6a $aip6b"
+             exit 1
+      fi
+}
+
+ip4change() {
+
       if [ ! -f $dir/cip4.log ];then
           echo "" > $dir/cip4.log
           /bin/chmod 600 $dir/cip4.log
           bip4=$(cat $dir/cip4.log)
       else
           bip4=$(cat $dir/cip4.log)
+          debug "Cached IPv4: $bip4"
       fi
 
-      if [ $force = false -a  "$aip4" == "$bip4" ];then
+      if [ $force = false -a  "$aip4" == "$bip4" ]; then
           debug "Your IPv4 is same so nothing to do --> exit"
           exit 0
       else
-          debug "Your public IPv4: $aip4"
           echo -e "Your IPv4 for $domain has changed or -f --> force is enabled\n"
           echo $aip4 > $dir/cip4.log
           aip=$aip4
       fi
 }
 
-ip6changed() {
+ip6change() {
+
       if [ ! -f $dir/cip6.log ];then
           echo "" > $dir/cip6.log
           /bin/chmod 600 $dir/cip6.log
           bip6=$(cat $dir/cip6.log)
       else
           bip6=$(cat $dir/cip6.log)
+          debug "Cached IPv6: $bip6"
       fi
 
-      if [ $force = false -a  "$aip6" == "$bip6" -o "$aip6" == "" ];then
-          debug "Your IPv6 is same or empty so nothing to do --> exit"
+      if [ $force = false -a  "$aip6" == "$bip6" ]; then
+          debug "Your IPv6 is same so nothing to do --> exit"
           exit 0
       else
-          debug "Your public IPv6: $aip6"
           echo -e "Your IPv6 for $domain has changed or -f --> force is enabled\n"
           echo $aip6 > $dir/cip6.log
           aip=$aip6
@@ -87,15 +108,15 @@ loin="\"action\": \"login\", \"param\":"
 loin1="\"apikey\": \"$apikey\", \"apipassword\": \"$apipw\", \"customernumber\": \"$ncid\""
 
       tmp=$(curl -s -X POST -d "{$loin {$loin1}}" "$api")
+      if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
+            echo "Error: "$(echo "$tmp" | jq -r .longmessage)" --> Exit!"
+            echo "Error: "$(echo "$tmp" | jq -r .shortmessage)" --> Exit!"
+            exit 1
+      fi
       sid=$(echo "${tmp}" | jq -r .responsedata.apisessionid)
       msg=$(echo "${tmp}" | jq -r .shortmessage)
 
       debug "$msg" "Session ID: $sid"
-
-      if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
-            echo "Error: $tmp"
-            return 1
-      fi
 }
 
 logout() {
@@ -105,28 +126,37 @@ lout1="\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": 
 
       tmp=$(curl -s -X POST -d "{$lout {$lout1}}" "$api")
       msg=$(echo "${tmp}" | jq -r .shortmessage)
-      debug "$msg"
+
+      debug "\n$msg"
 
       if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
             echo "Error: Session isn't made invalid !!!"
-            echo "Error: $tmp"
+            echo "Error: "$(echo "$tmp" | jq -r .longmessage)" --> Exit!"
             return 1
       fi
 }
 
 checkupdate() {
-domain=$1
-type=$2
 
-      if [ $type == 'A' ];then
-         debug "Your choice: IPv4 --> $type"
-         ip4changed
-      elif [ $type == 'AAAA' ];then
-         debug "Your choice: IPv6 --> $type"
-         ip6changed
+      if [ -n "$2" ];then
+         domain=$1
+         type=$2
+      else
+         echo "Need 2 Args: $*"
+         echo "Missing Arguments --> exit"
+         exit 1
+      fi
+      if [ "$type" == "A" ];then
+         debug "\nYour choice: Domain --> $domain\n\t       IPv4 --> $type"
+         checkipv4
+         ip4change
+      elif [ "$type" == "AAAA" ];then
+         debug "\nYour choice: Domain --> $domain\n\t       IPv6 --> $type"
+         checkipv6
+         ip6change
       else
          echo "Use A for IPv4 OR AAAA for IPv6 --> exit"
-         return 1
+         exit 1
       fi
       login
 
@@ -135,7 +165,12 @@ idr1="\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \
 
 # --> catch Records
       tmp=$(curl -s -X POST -d "{$idr {$idr1}}" "$api")
-
+# --> no Records say goodby --> Check DomainName
+      if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
+            echo "Error: "$(echo "$tmp" | jq -r .longmessage)" --> Check DomainName --> Exit!"
+            logout
+            exit 1
+      fi
 # --> select ip's from Records
       nip=$(echo "${tmp}" | jq -r --arg type "$type" '.responsedata.dnsrecords[] | select(.type == $type) | .destination' | xargs)
 # --> create array with IP's -> "nip"
@@ -165,12 +200,13 @@ udr1="\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \
               udr2="\"id\": \"${ids[$i]}\", \"hostname\": \"${subc[$i]}\", \"type\": \"$type\", \"priority\": \"0\", \"destination\": \"$aip\", \"deletercord\": \"FALSE\", \"state\": \"yes\""
               tmp=$(curl -s -X POST -d "{$udr {$udr1 { \"dnsrecords\": [ {$udr2} ]}}}" "$api")
            if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
-                 echo "Error: $tmp"
+                 echo "Error: "$(echo "$tmp" | jq -r .longmessage)" --> Exit!"
+#                 echo "Error: $tmp"
                  logout
                  return 1
            fi
            echo "Update ID: "${ids[$i]}" with Hostname: "${subc[$i]}" and IP befor: "${nip[$i]}"  after: "$aip"" 
-       #if ip not changed
+        #if ip not changed
         else
            echo "ID: "${ids[$i]}" with Hostname: "${subc[$i]}" and IP: "${nip[$i]}" is equal with Public IP: "$aip""
         fi
