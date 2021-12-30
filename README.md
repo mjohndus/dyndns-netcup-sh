@@ -13,12 +13,14 @@ Using the **[Netcup-DNS_API](https://www.netcup-wiki.de/wiki/DNS_API)**
 - apipw=yourapipw  
 
 **Your preferred Server:**  
-- aip4=$(curl -s 'https://ip4.irgendwas.ti')  
-- aip6=$(curl -s 'https://ip6.irgendwas.ti')  
+- aip4a=$(curl -s 'https://ip4.irgendwas.ti')  
+- aip4b=$(curl -s 'https://ip4.irgendwas.ti')
+- aip6a=$(curl -s 'https://ip6.irgendwas.ti')
+- aip6b=$(curl -s 'https://ip6.irgendwas.ti')
 
 ## HowTo
 **At first start:**  
-cip4.log or cip6.log files for saving current addresses are created in the same folder.  
+cip4.log or/and cip6.log files for saving current ip addresses are created in the install folder.  
 
 **At start-up before login:**  
 an ip check compares the current and the stored ip.  
@@ -29,10 +31,10 @@ The script starts if ip changed or option -f is set.
 
 | Option | Mode | description |
 |:------:|-----:|------------:|
-| -d | Debug Mode | shows some Informations |
-| -f | Force Mode | ignores ip check |
+| -d | Debug | shows some Informations |
+| -f | Force | ignores ip check |
 | -U | Main function | checks and updates if ip's are different |
-| -h | Help Mode | shows Options and Examples |
+| -h | Help | shows Options and Examples |
 
 **Examples:**  
 ```
@@ -44,15 +46,16 @@ The script starts if ip changed or option -f is set.
 **Example output for IPv4:**  
 ```
 user@xxxx:~# ./dncapi.sh -dfU example.de A  
-Your choice: IPv4 --> A  
-Your public IPv4: 177.198.122.123  
+Your choice: Domain --> kabelecke.de
+	       IPv4 --> A
+Server-1 IP: 176.198.122.72
+Cached IPv4: 176.198.122.72
 Your IPv4 for example.de has changed or -f --> force is enabled  
 Login successful  
 Session ID: NTE5NG5VSzM3ODYyMXZBbW9IY123456789123452eFo5Nz  
 Stored IP's: 177.198.122.123 177.198.122.123 199.198.199.123 177.198.122.123  
 DNS-Record ID's: 44433344 44433355 44433366 43355566  
 Hostnames: * @ xxxx yyyy  
-
 ID: 44433344 with Hostname: * and IP: 177.198.122.123 is equal with Public IP: 177.198.122.123  
 ID: 44433355 with Hostname: @ and IP: 177.198.122.123 is equal with Public IP: 177.198.122.123  
 Update ID: 44433366 with Hostname: xxxx and IP befor: 199.198.199.123  after: 177.198.122.123  
