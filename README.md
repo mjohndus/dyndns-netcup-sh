@@ -46,19 +46,29 @@ The script starts if ip changed or option -f is set.
 **Example output for IPv4:**  
 ```
 user@xxxx:~# ./dncapi.sh -dfU example.de A  
-Your choice: Domain --> kabelecke.de
+
+Your choice: Domain --> example.de
 	       IPv4 --> A
-Server-1 IP: 176.198.122.72
-Cached IPv4: 176.198.122.72
+
+Server-1 IP: 177.198.122.123
+Cached IPv4: 177.198.122.123
+
 Your IPv4 for example.de has changed or -f --> force is enabled  
+
 Login successful  
+
 Session ID: NTE5NG5VSzM3ODYyMXZBbW9IY123456789123452eFo5Nz  
-Stored IP's: 177.198.122.123 177.198.122.123 199.198.199.123 177.198.122.123  
+
+Stored IP's: 177.198.122.123 177.198.122.123 177.198.122.123 177.198.122.123  
+
 DNS-Record ID's: 44433344 44433355 44433366 43355566  
+
 Hostnames: * @ xxxx yyyy  
+
 ID: 44433344 with Hostname: * and IP: 177.198.122.123 is equal with Public IP: 177.198.122.123  
 ID: 44433355 with Hostname: @ and IP: 177.198.122.123 is equal with Public IP: 177.198.122.123  
 Update ID: 44433366 with Hostname: xxxx and IP befor: 199.198.199.123  after: 177.198.122.123  
 ID: 43355566 with Hostname: yyyy and IP: 177.198.122.123 is equal with Public IP: 177.198.122.123  
+
 Logout successful  
 ```
