@@ -22,6 +22,7 @@ regip6='^(([0-9a-fA-F]{0,4}:){1,7}([0-9a-fA-F]{0,4}))$'
 
 debug=false
 force=false
+info=false
 
 # --> some functions
 debug() {
@@ -62,7 +63,7 @@ checkipv6() {
 
 ip4change() {
 
-      if [ ! -f $dir/cip4.log ];then
+      if [ ! -f $dir/cip4.log ]; then
           echo "" > $dir/cip4.log
           /bin/chmod 600 $dir/cip4.log
           bip4=$(cat $dir/cip4.log)
@@ -75,15 +76,19 @@ ip4change() {
           debug "Your IPv4 is same so nothing to do --> exit"
           exit 0
       else
-          echo -e "Your IPv4 for $domain has changed or -f --> force is enabled\n"
-          echo $aip4 > $dir/cip4.log
-          aip=$aip4
+         if [ $info = true ]; then
+            debug "Information about \"--> $domain <--\""
+            else
+              echo -e "Your IPv4 for $domain has changed or -f --> force is enabled\n"
+              echo $aip4 > $dir/cip4.log
+              aip=$aip4
+         fi
       fi
 }
 
 ip6change() {
 
-      if [ ! -f $dir/cip6.log ];then
+      if [ ! -f $dir/cip6.log ]; then
           echo "" > $dir/cip6.log
           /bin/chmod 600 $dir/cip6.log
           bip6=$(cat $dir/cip6.log)
@@ -96,9 +101,37 @@ ip6change() {
           debug "Your IPv6 is same so nothing to do --> exit"
           exit 0
       else
-          echo -e "Your IPv6 for $domain has changed or -f --> force is enabled\n"
-          echo $aip6 > $dir/cip6.log
-          aip=$aip6
+         if [ $info = true ]; then
+            debug "Information about \"--> $domain <--\""
+            else
+              echo -e "Your IPv6 for $domain has changed or -f --> force is enabled\n"
+              echo $aip6 > $dir/cip6.log
+              aip=$aip6
+         fi
+      fi
+}
+
+checklogin() {
+
+      if [ -n "$2" ]; then
+         domain=$1
+         type=$2
+      else
+         echo "Need 2 Args: $*"
+         echo "Missing Arguments --> exit"
+         exit 1
+      fi
+      if [ "$type" == "A" ]; then
+         debug "\nYour choice: Domain --> $domain\n\t       IPv4 --> $type"
+         checkipv4
+         ip4change
+      elif [ "$type" == "AAAA" ]; then
+         debug "\nYour choice: Domain --> $domain\n\t       IPv6 --> $type"
+         checkipv6
+         ip6change
+      else
+         echo "Use A for IPv4 OR AAAA for IPv6 --> exit"
+         exit 1
       fi
 }
 
@@ -109,8 +142,8 @@ loin1="\"apikey\": \"$apikey\", \"apipassword\": \"$apipw\", \"customernumber\":
 
       tmp=$(curl -s -X POST -d "{$loin {$loin1}}" "$api")
       if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
-            echo "Error: "$(echo "$tmp" | jq -r .longmessage)" --> Exit!"
             echo "Error: "$(echo "$tmp" | jq -r .shortmessage)" --> Exit!"
+            echo "Error: "$(echo "$tmp" | jq -r .longmessage)" --> Exit!"
             exit 1
       fi
       sid=$(echo "${tmp}" | jq -r .responsedata.apisessionid)
@@ -136,29 +169,7 @@ lout1="\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": 
       fi
 }
 
-checkupdate() {
-
-      if [ -n "$2" ];then
-         domain=$1
-         type=$2
-      else
-         echo "Need 2 Args: $*"
-         echo "Missing Arguments --> exit"
-         exit 1
-      fi
-      if [ "$type" == "A" ];then
-         debug "\nYour choice: Domain --> $domain\n\t       IPv4 --> $type"
-         checkipv4
-         ip4change
-      elif [ "$type" == "AAAA" ];then
-         debug "\nYour choice: Domain --> $domain\n\t       IPv6 --> $type"
-         checkipv6
-         ip6change
-      else
-         echo "Use A for IPv4 OR AAAA for IPv6 --> exit"
-         exit 1
-      fi
-      login
+getrecords() {
 
 idr="\"action\": \"infoDnsRecords\", \"param\":"
 idr1="\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$ncid\", \"domainname\": \"$domain\""
@@ -167,7 +178,8 @@ idr1="\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \
       tmp=$(curl -s -X POST -d "{$idr {$idr1}}" "$api")
 # --> no Records say goodby --> Check DomainName
       if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
-            echo "Error: "$(echo "$tmp" | jq -r .longmessage)" --> Check DomainName --> Exit!"
+            echo "Error: "$(echo "$tmp" | jq -r .longmessage)" --> Check DomainName: \"--> $domain <--\" --> Exit!"
+#            echo "Error: $long --> Check DomainName: $domain --> Exit!"
             logout
             exit 1
       fi
@@ -175,37 +187,71 @@ idr1="\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \
       nip=$(echo "${tmp}" | jq -r --arg type "$type" '.responsedata.dnsrecords[] | select(.type == $type) | .destination' | xargs)
 # --> create array with IP's -> "nip"
       nip=($nip)
-      debug "Stored IP's: ${nip[*]}"
+#      debug "Stored IP's: ${nip[*]}"
 
 # --> select id's from Records
       ids=$(echo "${tmp}" | jq -r --arg type "$type" '.responsedata.dnsrecords[] | select(.type == $type) | .id' | xargs)
 # --> create array with ID's -> "ids"
       ids=($ids)
-      debug "DNS-Record ID's: ${ids[*]}"
+#      debug "DNS-Record ID's: ${ids[*]}"
 
 # --> select hostnames from Records
 # --> shows symbol * and no filelist --> GLOBIGNORE=* or
       set -f
-      subc=$(echo "${tmp}" | jq -r '.responsedata.dnsrecords[] | select(.type == "'$2'") | .hostname' | xargs)
+      subc=$(echo "${tmp}" | jq -r '.responsedata.dnsrecords[] | select(.type == "'$1'") | .hostname' | xargs)
 # --> create array with hostnames -> "subc"
       subc=($subc)
-      debug "Hostnames: ${subc[*]}"
+      if [ $info = false ]; then
+         debug "Hostnames: ${subc[*]}"
+      fi
+}
+
+info() {
+
+force=true
+debug=true
+info=true
+
+      checklogin $1 $2
+      login
+      getrecords $2
+
+div=----------------------------------
+div=$div$div$div
+br=80
+head="%1s %16s %23s %8s %26s %1s\n"
+
+          printf "%$br.${br}s\n" "$div"
+          printf "$head" "|" "ID       |" "Name          |" "Type  |" "IP            " "|"
+          printf "%$br.${br}s\n" "$div"
+      for (( i=0; i<${#ids[@]}; i++ ));do
+          printf "| %-14s | %-21s | %6s | %26s |\n" ${ids[$i]} ${subc[$i]} $type ${nip[$i]}
+      done
+          printf "%$br.${br}s\n" "$div"
+
+      logout
+}
+
+checkupdate() {
+
+      checklogin $1 $2
+      login
+      getrecords $2
 
 udr="\"action\": \"updateDnsRecords\", \"param\":"
 udr1="\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$ncid\", \"clientrequestid\": \"$client\" , \"domainname\": \"$domain\", \"dnsrecordset\":"
 
       for (( i=0; i<${#ids[@]}; i++ ));do
         #if ip has changed
-        if [ "${nip[$i]}" != "$aip" ];then
+        if [ "${nip[$i]}" != "$aip" ]; then
               udr2="\"id\": \"${ids[$i]}\", \"hostname\": \"${subc[$i]}\", \"type\": \"$type\", \"priority\": \"0\", \"destination\": \"$aip\", \"deletercord\": \"FALSE\", \"state\": \"yes\""
               tmp=$(curl -s -X POST -d "{$udr {$udr1 { \"dnsrecords\": [ {$udr2} ]}}}" "$api")
            if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
                  echo "Error: "$(echo "$tmp" | jq -r .longmessage)" --> Exit!"
-#                 echo "Error: $tmp"
                  logout
                  return 1
            fi
-           echo "Update ID: "${ids[$i]}" with Hostname: "${subc[$i]}" and IP befor: "${nip[$i]}"  after: "$aip"" 
+           echo "Update ID: "${ids[$i]}" with Hostname: "${subc[$i]}" and IP befor: "${nip[$i]}"  after: "$aip""
         #if ip not changed
         else
            echo "ID: "${ids[$i]}" with Hostname: "${subc[$i]}" and IP: "${nip[$i]}" is equal with Public IP: "$aip""
@@ -224,8 +270,9 @@ help() {
         echo ""
         echo "Examples:"
         echo "CheckUpdate-IP:  dncapi.sh -U example.com A"
-        echo "CheckUpdate-IP:  dncapi.sh -U example.com AAAA"
-        echo "CheckUpdate-IP:  dncapi.sh -dfU example.com A"
+        echo "CheckUpdate-IP:  dncapi.sh -dU example.com AAAA"
+        echo "CheckUpdate-IP:  dncapi.sh -fU example.com A"
+        echo "CheckUpdate-IP:  dncapi.sh -dfU example.com AAAA"
         echo ""
 }
 
@@ -235,11 +282,12 @@ if [ $# -eq 0 ]; then
         help
 fi
 
-while getopts 'dfUh' opt; do
+while getopts 'dfUih' opt; do
         case "$opt" in
                 d) debug=true;;
                 f) force=true;;
                 U) checkupdate "$2" "$3";;
+                i) info "$2" "$3";;
                 h) help;;
                 *) echo "Invalid Argument";;
         esac
