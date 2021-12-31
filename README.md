@@ -24,27 +24,41 @@ cip4.log or/and cip6.log files for saving current ip addresses are created in th
 
 **At start-up before login:**  
 an ip check compares the current and the stored ip.  
-If nothing has changed, the script is terminated.  
+If nothing has changed, the script will be aborted.  
 The script starts if ip changed or option -f is set.  
 
 **Use Argument -U as single or like -dU, -dfU:**  
 
 | Option | Mode | description |
 |:------:|-----:|------------:|
-| -d | Debug | shows some Informations |
-| -f | Force | ignores ip check |
+| -d | Debug | shows Informations |
+| -f | Force | ignores ip check and changes different ip's |
 | -U | Main function | checks and updates if ip's are different |
+| -i | Info | shows Informations about Domain |
 | -h | Help | shows Options and Examples |
 
 **Examples:**  
 ```
 ./dncapi.sh -U example.com A  
 ./dncapi.sh -dU example.com AAAA  
-./dncapi.sh -dfU example.com A  
+./dncapi.sh -fU example.com A  
+./dncapi.sh -dfU example.com AAAA  
 ```
 ## Output
-**Example output for IPv4:**  
+**Example outputs for IPv4:**  
 ```
+user@xxxx:~# ./dncapi.sh -U example.de AAAA  
+
+Using in cronjob:  
+there is no Output:
+--> if no Error or Update IP Address  
+--> debug and/or force not activated  
+```
+```
+2. Output (Force -f)
+Ignores ipcheck:
+--> is something to do changes are made
+
 user@xxxx:~# ./dncapi.sh -dfU example.de A  
 
 Your choice: Domain --> example.de
@@ -71,4 +85,34 @@ Update ID: 44433366 with Hostname: xxxx and IP befor: 199.198.199.123  after: 17
 ID: 43355566 with Hostname: yyyy and IP: 177.198.122.123 is equal with Public IP: 177.198.122.123  
 
 Logout successful  
+```
+```
+3. Output (Info -i)  
+Debug and Force are activated automatically  
+--> but no changes are made
+
+user@xxxx:~# ./dncapi.sh -i example.de A
+
+Your choice: Domain --> example.de
+               IPv4 --> A
+
+Server-1 IP: 177.198.122.123
+Cached IPv4: 177.198.122.123
+
+Information about "--> example.de <--"
+
+Login successful
+
+Session ID: NTE5NG5VSzM3ODYyMXZBbW9IY123456789123452eFo5Nz
+
+-------------------------------------------------------------------------------- 
+|       ID       |         Name          | Type   |             IP             |
+-------------------------------------------------------------------------------- 
+| 44433344       | *                     | A      |            177.198.122.123 |
+| 44433355       | @                     | A      |            177.198.122.123 |
+| 44433366       | xxxx                  | A      |            177.198.122.123 |
+| 43355566       | yyyy                  | A      |            177.198.122.123 |
+-------------------------------------------------------------------------------- 
+
+Logout successful
 ```
