@@ -40,7 +40,7 @@ checkipv4() {
              debug "Server-1 IP: $aip4"
     elif [[ "$aip4b" =~ $regip4 ]]; then
              aip4=$aip4b
-             debug "Server-2 IP: $aip4"
+             debug "Fallback Server-2 IP: $aip4" "Server-1 not reachable ?"
     else
              echo "Invalid IP: $aip4a $aip4b"
              exit 1
@@ -54,7 +54,7 @@ checkipv6() {
              debug "Server-1 IP: $aip6"
     elif [[ "$aip6b" =~ $regip6 ]]; then
              aip6=$aip6b
-             debug "Server-2 IP: $aip6"
+             debug "Fallback Server-2 IP: $aip6" "Server-1 not reachable ?"
     else
              echo "Invalid IP: $aip6a $aip6b"
              exit 1
@@ -218,16 +218,18 @@ info=true
 
 div=----------------------------------
 div=$div$div$div
-br=80
-head="%1s %16s %23s %8s %26s %1s\n"
+br=81
+rr="|"
+head="%s %16s %24s %8s %28s\n"
+body="%s %-14s %s %-22s %s %6s %s %26s %s\n"
 
-          printf "%$br.${br}s\n" "$div"
-          printf "$head" "|" "ID       |" "Name          |" "Type  |" "IP            " "|"
-          printf "%$br.${br}s\n" "$div"
+          printf "%.${br}s\n" "$div"
+          printf "$head" "|" "ID       |" "Name          |" "Type  |" "IP             |"
+          printf "%.${br}s\n" "$div"
       for (( i=0; i<${#ids[@]}; i++ ));do
-          printf "| %-14s | %-21s | %6s | %26s |\n" ${ids[$i]} ${subc[$i]} $type ${nip[$i]}
+          printf "$body" "$rr" "${ids[$i]}" "$rr" "${subc[$i]}" "$rr" $type "$rr" "${nip[$i]}" "$rr"
       done
-          printf "%$br.${br}s\n" "$div"
+          printf "%.${br}s\n" "$div"
 
       logout
 }
