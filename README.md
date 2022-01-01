@@ -48,19 +48,18 @@ The script starts if ip changed or option -f is set.
 ## Output
 **Example outputs for IPv4:**  
 
-1. Cronjob  
+**1. Cronjob**  
 - 0,30 * * * * /your path to/dncapi.sh -U example.de AAAA  
 
-   - Using in cronjob:  
-   --> if NO Error or Update  
-   --> debug and force not activated  
-   - there is no Output  
+     - Using in cronjob:  
+       - --> if NO Error or Update  
+       - --> debug and force not activated  
+     - there is no Output  
 
-2. Output (debug -d with force -f)  
-   - force Ignores ipcheck:  
-   --> is something to do changes are made  
-
-   - debug prints some (login)informations  
+**2. Output (debug -d with force -f)**  
+- Force Ignores ipcheck:  
+  - --> is something to do changes are made  
+- debug prints some (login)informations  
 
 user@xxxx:~# ./dncapi.sh -dfU example.de A  
 ```
@@ -88,10 +87,10 @@ ID: 43355566 with Hostname: yyyy and IP: 177.198.122.123 is equal with Public IP
 
 Logout successful  
 
-3. Output (info -i)  
-   - debug and force are activated automatically  
-   --> but no changes are made  
-   --> only info  
+**3. Output (info -i)**  
+- debug and force are activated automatically  
+  - --> but no changes are made  
+  - --> only info  
 
 user@xxxx:~# ./dncapi.sh -i example.de A  
 ```
