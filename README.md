@@ -43,21 +43,24 @@ The script starts if ip changed or option -f is set.
 ./dncapi.sh -dU example.com AAAA  
 ./dncapi.sh -fU example.com A  
 ./dncapi.sh -dfU example.com AAAA  
+./dncapi.sh -i example.com AAAA
 ```
 ## Output
 **Example outputs for IPv4:**  
-```
-user@xxxx:~# ./dncapi.sh -U example.de AAAA  
+
+1. Cronjob
+0,30 * * * * /your path to/dncapi.sh -U example.de AAAA  
 
 Using in cronjob:  
-there is no Output:
---> if no Error or Update IP Address  
---> debug and/or force not activated  
-```
-```
-2. Output (Force -f)
-Ignores ipcheck:
+there is no Output:  
+--> if NO Error or Update  
+--> debug and force not activated  
+
+2. Output (debug -d with force -f)
+-force Ignores ipcheck:
 --> is something to do changes are made
+
+-debug prints some (login)informations
 
 user@xxxx:~# ./dncapi.sh -dfU example.de A  
 
@@ -65,6 +68,7 @@ Your choice: Domain --> example.de
 	       IPv4 --> A
 
 Server-1 IP: 177.198.122.123
+
 Cached IPv4: 177.198.122.123
 
 Your IPv4 for example.de has changed or -f --> force is enabled  
@@ -73,23 +77,21 @@ Login successful
 
 Session ID: NTE5NG5VSzM3ODYyMXZBbW9IY123456789123452eFo5Nz  
 
-Stored IP's: 177.198.122.123 177.198.122.123 177.198.122.123 177.198.122.123  
-
-DNS-Record ID's: 44433344 44433355 44433366 43355566  
-
 Hostnames: * @ xxxx yyyy  
 
+--> force:
 ID: 44433344 with Hostname: * and IP: 177.198.122.123 is equal with Public IP: 177.198.122.123  
 ID: 44433355 with Hostname: @ and IP: 177.198.122.123 is equal with Public IP: 177.198.122.123  
 Update ID: 44433366 with Hostname: xxxx and IP befor: 199.198.199.123  after: 177.198.122.123  
 ID: 43355566 with Hostname: yyyy and IP: 177.198.122.123 is equal with Public IP: 177.198.122.123  
+<-- force
 
 Logout successful  
-```
-```
-3. Output (Info -i)  
-Debug and Force are activated automatically  
+
+3. Output (info -i)  
+debug and force are activated automatically  
 --> but no changes are made
+--> only info
 
 user@xxxx:~# ./dncapi.sh -i example.de A
 
@@ -115,4 +117,3 @@ Session ID: NTE5NG5VSzM3ODYyMXZBbW9IY123456789123452eFo5Nz
 -------------------------------------------------------------------------------- 
 
 Logout successful
-```
