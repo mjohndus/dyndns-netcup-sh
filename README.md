@@ -53,12 +53,12 @@ The script starts if ip changed or option -f is set.
 
 Using in cronjob:  
 there is no Output:  
- --> if NO Error or Update  
- --> debug and force not activated  
+ - --> if NO Error or Update  
+ - --> debug and force not activated  
 
 2. Output (debug -d with force -f)  
  - force Ignores ipcheck:  
- --> is something to do changes are made  
+ - --> is something to do changes are made  
 
  - debug prints some (login)informations  
 
@@ -90,22 +90,22 @@ Logout successful
 
 3. Output (info -i)  
  - debug and force are activated automatically  
- --> but no changes are made  
- --> only info  
+ - --> but no changes are made  
+ - --> only info  
 
-user@xxxx:~# ./dncapi.sh -i example.de A
+user@xxxx:~# ./dncapi.sh -i example.de A  
 
-Your choice: Domain --> example.de
-               IPv4 --> A
+Your choice: Domain --> example.de  
+               IPv4 --> A  
 
-Server-1 IP: 177.198.122.123
-Cached IPv4: 177.198.122.123
+Server-1 IP: 177.198.122.123  
+Cached IPv4: 177.198.122.123  
 
-Information about "--> example.de <--"
+Information about "--> example.de <--"  
 
-Login successful
+Login successful  
 
-Session ID: NTE5NG5VSzM3ODYyMXZBbW9IY123456789123452eFo5Nz
+Session ID: NTE5NG5VSzM3ODYyMXZBbW9IY123456789123452eFo5Nz  
 
 --------------------------------------------------------------------------------  
 |       ID       |         Name          | Type   |             IP             |  
