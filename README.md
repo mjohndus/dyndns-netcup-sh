@@ -24,7 +24,7 @@ cip4.log or/and cip6.log files for saving current ip addresses are created in th
 
 **At start-up before login:**  
 an ip check compares the current and the stored ip.  
-If nothing has changed, the script will be aborted.  
+If nothing has changed, the script will abort.  
 The script starts if ip changed or option -f is set.  
 
 **Use Argument -U as single or like -dU, -dfU:**  
@@ -80,14 +80,16 @@ Hostnames: * @ xxxx yyyy
 
 --> force:  
 ```
+--> force: NC Domain Zone Info
 ----------------------------------------------------------------------------------------------------
-|     ID     |      HostName      |        Cached IP        |        Public IP        |   Status   |
+|     ID     |      HostName      |        Stored IP        |        Public IP        |   Status   |
 ----------------------------------------------------------------------------------------------------
 | 44433344   | *                  |         177.198.122.123 |         177.198.122.123 |      equal |
 | 44433355   | @                  |         177.198.122.123 |         177.198.122.123 |      equal |
 | 44433366   | xxxx               |         199.198.199.123 |         177.198.122.123 |    changed |
 | 43355566   | yyyy               |         177.198.122.123 |         177.198.122.123 |      equal |
 ----------------------------------------------------------------------------------------------------
+<-- force
 ```
 <-- force  
 
@@ -113,7 +115,7 @@ Login successful
 Session ID: NTE5NG5VSzM3ODYyMXZBbW9IY123456789123452eFo5Nz  
 ```
 --------------------------------------------------------------------------------  
-|       ID       |         Name          | Type   |             IP             |  
+|       ID       |         Name          |  Type  |             IP             |  
 --------------------------------------------------------------------------------  
 | 44433344       | *                     |      A |            177.198.122.123 |  
 | 44433355       | @                     |      A |            177.198.122.123 |  
