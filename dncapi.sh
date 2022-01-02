@@ -72,7 +72,7 @@ ip4change() {
           debug "Cached IPv4: $bip4"
       fi
 
-      if [ $force = false -a  "$aip4" == "$bip4" ]; then
+      if [ $force = false -a "$aip4" == "$bip4" ]; then
           debug "Your IPv4 is same so nothing to do --> exit"
           exit 0
       else
@@ -97,7 +97,7 @@ ip6change() {
           debug "Cached IPv6: $bip6"
       fi
 
-      if [ $force = false -a  "$aip6" == "$bip6" ]; then
+      if [ $force = false -a "$aip6" == "$bip6" ]; then
           debug "Your IPv6 is same so nothing to do --> exit"
           exit 0
       else
