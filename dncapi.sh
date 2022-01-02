@@ -240,8 +240,19 @@ checkupdate() {
       login
       getrecords $2
 
+part=----------------------------------
+part=$part$part$part$part
+w=108
+tl="|"
+top="%s %12s %24s %27s %27s %12s\n"
+bod="%s %-10s %s %-22s %s %25s %s %25s %s %10s %s\n"
+
 udr="\"action\": \"updateDnsRecords\", \"param\":"
 udr1="\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$ncid\", \"clientrequestid\": \"$client\" , \"domainname\": \"$domain\", \"dnsrecordset\":"
+
+      printf "%.*s\n" 108 "$part"
+      printf "$top" "|" "ID     |" "HostName        |" "Cached IP        |" "Public IP        |" "Status   |"
+      printf "%.${w}s\n" "$part"
 
       for (( i=0; i<${#ids[@]}; i++ ));do
         #if ip has changed
@@ -253,12 +264,13 @@ udr1="\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \
                  logout
                  return 1
            fi
-           echo "Update ID: "${ids[$i]}" with Hostname: "${subc[$i]}" and IP befor: "${nip[$i]}"  after: "$aip""
+           printf "$bod" "$tl" "${ids[$i]}" "$tl" "${subc[$i]}" "$tl" "${nip[$i]}" "$tl" "$aip" "$tl" "changed" "$tl"
         #if ip not changed
         else
-           echo "ID: "${ids[$i]}" with Hostname: "${subc[$i]}" and IP: "${nip[$i]}" is equal with Public IP: "$aip""
+           printf "$bod" "$tl" "${ids[$i]}" "$tl" "${subc[$i]}" "$tl" "${nip[$i]}" "$tl" "$aip" "$tl" "equal" "$tl"
         fi
       done
+      printf "%.${w}s\n" "$part"
       logout
 }
 
