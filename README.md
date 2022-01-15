@@ -13,10 +13,10 @@ Using the **[Netcup-DNS_API](https://www.netcup-wiki.de/wiki/DNS_API)**
 - apipw=yourapipw  
 
 **Your preferred Server:**  
-- aip4a=$(curl -s 'https://ip4.irgendwas.ti')  
-- aip4b=$(curl -s 'https://ip4.irgendwas.ti')
-- aip6a=$(curl -s 'https://ip6.irgendwas.ti')
-- aip6b=$(curl -s 'https://ip6.irgendwas.ti')
+- aip4a=$(curl -s 'https://ip4.first.de')  
+- aip4b=$(curl -s 'https://ip4.decond.de')
+- aip6a=$(curl -s 'https://ip6.first.de')
+- aip6b=$(curl -s 'https://ip6.second.de')
 
 ## HowTo
 **At first start:**  
@@ -43,7 +43,7 @@ The script starts if ip changed or option -f is set.
 ./dncapi.sh -dU example.com AAAA  
 ./dncapi.sh -fU example.com A  
 ./dncapi.sh -dfU example.com AAAA  
-./dncapi.sh -i example.com AAAA
+./dncapi.sh -i example.com A
 ```
 ## Output
 **Example outputs for IPv4:**  
@@ -78,9 +78,8 @@ Session ID: NTE5NG5VSzM3ODYyMXZBbW9IY123456789123452eFo5Nz
 
 Hostnames: * @ xxxx yyyy  
 
---> force:  
 ```
---> force: NC Domain Zone Info
+--> force: Domain Zone Info
 ----------------------------------------------------------------------------------------------------
 |     ID     |      HostName      |        Stored IP        |        Public IP        |   Status   |
 ----------------------------------------------------------------------------------------------------
@@ -91,7 +90,6 @@ Hostnames: * @ xxxx yyyy
 ----------------------------------------------------------------------------------------------------
 <-- force
 ```
-<-- force  
 
 Logout successful  
 
