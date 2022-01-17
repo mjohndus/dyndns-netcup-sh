@@ -7,10 +7,10 @@ apikey=your-apikey
 apipw=your-apipw
 
 # --> get ipv4/6
-aip4a=$(curl -s 'https://ip4.irgendwas.ti')
-aip4b=$(curl -s 'https://ip4.irgendwas.ti')
-aip6a=$(curl -s 'https://ip6.irgendwas.ti')
-aip6b=$(curl -s 'https://ip6.irgendwas.ti')
+aip4a=$(curl -s 'https://ip4.first.de')
+aip4b=$(curl -s 'https://ip4.second.de')
+aip6a=$(curl -s 'https://ip6.first.de')
+aip6b=$(curl -s 'https://ip6.second.de')
 
 api="https://ccp.netcup.net/run/webservice/servers/endpoint.php?JSON"
 client=""
@@ -28,7 +28,7 @@ info=false
 debug() {
       if [ $debug = true ]; then
          for i in "$@"; do
-         echo -e "$i\n"
+         echo -e "\n$i"
          done
       fi
 }
@@ -42,7 +42,7 @@ checkipv4() {
              aip4=$aip4b
              debug "Fallback Server-2 IP: $aip4" "Server-1 not reachable ?"
     else
-             echo "Invalid IP: $aip4a $aip4b"
+             echo "Error: Invalid IP: $aip4a $aip4b"
              exit 1
       fi
 }
@@ -56,7 +56,7 @@ checkipv6() {
              aip6=$aip6b
              debug "Fallback Server-2 IP: $aip6" "Server-1 not reachable ?"
     else
-             echo "Invalid IP: $aip6a $aip6b"
+             echo "Error: Invalid IP: $aip6a $aip6b"
              exit 1
       fi
 }
@@ -79,7 +79,7 @@ ip4change() {
          if [ $info = true ]; then
             debug "Information about \"--> $domain <--\""
             else
-              echo -e "Your IPv4 for $domain has changed or -f --> force is enabled\n"
+              echo -e "\nYour IPv4 for $domain has changed or -f --> force is enabled"
               echo $aip4 > $dir/cip4.log
               aip=$aip4
          fi
@@ -104,7 +104,7 @@ ip6change() {
          if [ $info = true ]; then
             debug "Information about \"--> $domain <--\""
             else
-              echo -e "Your IPv6 for $domain has changed or -f --> force is enabled\n"
+              echo -e "\nYour IPv6 for $domain has changed or -f --> force is enabled"
               echo $aip6 > $dir/cip6.log
               aip=$aip6
          fi
@@ -117,20 +117,20 @@ checklogin() {
          domain=$1
          type=$2
       else
-         echo "Need 2 Args: $*"
-         echo "Missing Arguments --> exit"
+         echo "Error: Need 2 Args: $*"
+         echo "Error: Missing Arguments --> exit"
          exit 1
       fi
       if [ "$type" == "A" ]; then
-         debug "\nYour choice: Domain --> $domain\n\t       IPv4 --> $type"
+         debug "Your choice: Domain --> $domain\t       IPv4 --> $type"
          checkipv4
          ip4change
       elif [ "$type" == "AAAA" ]; then
-         debug "\nYour choice: Domain --> $domain\n\t       IPv6 --> $type"
+         debug "Your choice: Domain --> $domain\t       IPv6 --> $type"
          checkipv6
          ip6change
       else
-         echo "Use A for IPv4 OR AAAA for IPv6 --> exit"
+         echo "Error: Use A for IPv4 OR AAAA for IPv6 --> exit"
          exit 1
       fi
 }
@@ -160,7 +160,7 @@ lout1="\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": 
       tmp=$(curl -s -X POST -d "{$lout {$lout1}}" "$api")
       msg=$(echo "${tmp}" | jq -r .shortmessage)
 
-      debug "\n$msg"
+      debug "$msg\n"
 
       if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
             echo "Error: Session isn't made invalid !!!"
@@ -206,6 +206,12 @@ idr1="\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \
       fi
 }
 
+line() {
+div1=----------------------------------
+div1=$div1$div1$div1$div1
+printf "%.$1s\n" "$div1"
+}
+
 info() {
 
 force=true
@@ -216,21 +222,17 @@ info=true
       login
       getrecords $2
 
-div=----------------------------------
-div=$div$div$div
-br=81
-rr="|"
 head="%s %16s %24s %8s %28s\n"
 body="%s %-14s %s %-22s %s %6s %s %26s %s\n"
 
-          printf "%.${br}s\n" "$div"
+          echo ""
+          line 81
           printf "$head" "|" "ID       |" "Name          |" "Type  |" "IP             |"
-          printf "%.${br}s\n" "$div"
+          line 81
       for (( i=0; i<${#ids[@]}; i++ ));do
-          printf "$body" "$rr" "${ids[$i]}" "$rr" "${subc[$i]}" "$rr" $type "$rr" "${nip[$i]}" "$rr"
+          printf "$body" "|" "${ids[$i]}" "|" "${subc[$i]}" "|" $type "|" "${nip[$i]}" "|"
       done
-          printf "%.${br}s\n" "$div"
-
+          line 81
       logout
 }
 
@@ -240,19 +242,20 @@ checkupdate() {
       login
       getrecords $2
 
-part=----------------------------------
-part=$part$part$part$part
-w=108
-tl="|"
+#"${ip:-"0"}\"
+pp=$([ "$type" == "A" ] && echo "IPv4" || echo "IPv6")
 top="%s %12s %24s %27s %27s %12s\n"
 bod="%s %-10s %s %-22s %s %25s %s %25s %s %10s %s\n"
+bod1="%s %-10s %s %-22s %s %66s %s\n"
 
 udr="\"action\": \"updateDnsRecords\", \"param\":"
 udr1="\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$ncid\", \"clientrequestid\": \"$client\" , \"domainname\": \"$domain\", \"dnsrecordset\":"
 
-      printf "%.*s\n" 108 "$part"
-      printf "$top" "|" "ID     |" "HostName        |" "Cached IP        |" "Public IP        |" "Status   |"
-      printf "%.${w}s\n" "$part"
+      #printf "%.*s\n" 108 "$part"
+      echo ""
+      line 108
+      printf "$top" "|" "ID     |" "HostName        |" "Zone IP          |" "Public IP         |" "Status   |"
+      line 108
 
       for (( i=0; i<${#ids[@]}; i++ ));do
         #if ip has changed
@@ -264,13 +267,19 @@ udr1="\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \
                  logout
                  return 1
            fi
-           printf "$bod" "$tl" "${ids[$i]}" "$tl" "${subc[$i]}" "$tl" "${nip[$i]}" "$tl" "$aip" "$tl" "changed" "$tl"
+           ##line 108
+           printf "$bod" "|" "${ids[$i]}" "|" "${subc[$i]}" "|" "${nip[$i]}" "|" "$aip" "|" "different" "|"
+           #printf "$bod1" "|" "${ids[$i]}" "|" "${subc[$i]}" "|" "$pp changed successfully                    " "|"
+           #line 108
         #if ip not changed
         else
-           printf "$bod" "$tl" "${ids[$i]}" "$tl" "${subc[$i]}" "$tl" "${nip[$i]}" "$tl" "$aip" "$tl" "equal" "$tl"
+           printf "$bod" "|" "${ids[$i]}" "|" "${subc[$i]}" "|" "${nip[$i]}" "|" "$aip" "|" "equal" "|"
+           ##line 108
+           printf "$bod1" "|" "${ids[$i]}" "|" "${subc[$i]}" "|" "$pp changed successfully                    " "|"
+           line 108
         fi
       done
-      printf "%.${w}s\n" "$part"
+      line 108
       logout
 }
 
@@ -280,6 +289,7 @@ help() {
         echo "-d   Debug Mode   dncapi.sh -d... --> some informations"
         echo "-f   Force Mode   dncapi.sh -f... --> ignores ip-check"
         echo "-U   CheckUpdate  dncapi.sh -U DOMAIN RECORDTYPE --> A OR AAAA "
+        echo "-i   info         dncapi.sh -i DOMAIN RECORDTYPE"
         echo "-h   help"
         echo ""
         echo "Examples:"
@@ -287,6 +297,7 @@ help() {
         echo "CheckUpdate-IP:  dncapi.sh -dU example.com AAAA"
         echo "CheckUpdate-IP:  dncapi.sh -fU example.com A"
         echo "CheckUpdate-IP:  dncapi.sh -dfU example.com AAAA"
+        echo "CheckUpdate-IP:  dncapi.sh -i example.com A"
         echo ""
 }
 
