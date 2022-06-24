@@ -267,16 +267,17 @@ udr1="\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \
                  logout
                  return 1
            fi
-           ##line 108
            printf "$bod" "|" "${ids[$i]}" "|" "${subc[$i]}" "|" "${nip[$i]}" "|" "$aip" "|" "different" "|"
-           #printf "$bod1" "|" "${ids[$i]}" "|" "${subc[$i]}" "|" "$pp changed successfully                    " "|"
-           #line 108
+           printf "$bod1" "|" "${ids[$i]}" "|" "${subc[$i]}" "|" "$pp changed successfully                    " "|"
+           if [ $i -lt $((${#ids[@]}-1)) ]; then
+              line 108
+           fi
         #if ip not changed
         else
            printf "$bod" "|" "${ids[$i]}" "|" "${subc[$i]}" "|" "${nip[$i]}" "|" "$aip" "|" "equal" "|"
-           ##line 108
-           printf "$bod1" "|" "${ids[$i]}" "|" "${subc[$i]}" "|" "$pp changed successfully                    " "|"
-           line 108
+           if [ $i -lt $((${#ids[@]}-1)) ]; then
+              line 108
+           fi
         fi
       done
       line 108
